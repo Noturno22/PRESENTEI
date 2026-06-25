@@ -4,19 +4,23 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useSupabaseSafe, isSupabaseConfigured } from '@/lib/supabase';
+import { HeartIcon, CalendarIcon, GiftIcon, BagIcon, UserIcon } from '@/components';
 
 interface NavItem {
   label: string;
   href: string;
-  icon: string;
+  icon: React.ReactNode;
 }
 
+const iconClass = 'w-5 h-5';
+
 const navItems: NavItem[] = [
-  { label: 'Início', href: '/inicio', icon: '🏠' },
-  { label: 'Calendário', href: '/calendario', icon: '📅' },
-  { label: 'Presentes', href: '/presentes', icon: '🎁' },
-  { label: 'Pedidos', href: '/pedidos', icon: '📦' },
-  { label: 'Perfil', href: '/perfil', icon: '👤' },
+  { label: 'Início', href: '/inicio', icon: <HeartIcon className={iconClass} /> },
+  { label: 'Calendário', href: '/calendario', icon: <CalendarIcon className={iconClass} /> },
+  { label: 'Presentes', href: '/presentes', icon: <GiftIcon className={iconClass} /> },
+  { label: 'Pedidos', href: '/pedidos', icon: <BagIcon className={iconClass} /> },
+  { label: 'Contactos', href: '/contactos', icon: <UserIcon className={iconClass} /> },
+  { label: 'Perfil', href: '/perfil', icon: <UserIcon className={iconClass} /> },
 ];
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
@@ -87,7 +91,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     : 'text-white/70 hover:bg-white/10 hover:text-white'
                 }`}
               >
-                <span className="text-lg">{item.icon}</span>
+                <span className="flex items-center justify-center">{item.icon}</span>
                 <span>{item.label}</span>
               </Link>
             );

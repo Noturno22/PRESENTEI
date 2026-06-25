@@ -2,28 +2,30 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { DigitalCard } from '@presentei/shared/types';
 import type { DigitalCardInput } from '@presentei/shared/schemas';
 
-/**
- * Returns all digital cards belonging to the current user.
- *
- * @todo Implement actual Supabase query when Supabase is active.
- */
 export async function getDigitalCards(supabase: SupabaseClient): Promise<DigitalCard[]> {
-  // @todo: implement
-  // return supabase.from('digital_cards').select('*').throwOnError();
-  return [];
+  const { data, error } = await supabase
+    .from('digital_cards')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) throw error;
+  return data ?? [];
 }
 
-/**
- * Creates a new digital card.
- *
- * @todo Implement actual Supabase mutation when Supabase is active.
- */
 export async function createDigitalCard(
   supabase: SupabaseClient,
   data: DigitalCardInput,
 ): Promise<DigitalCard> {
-  // @todo: implement
-  // const { data: created } = await supabase.from('digital_cards').insert(data).select().single().throwOnError();
-  // return created;
-  throw new Error('[api-client] createDigitalCard is not yet implemented. Configure Supabase first.');
+  const { data: created, error } = await supabase
+    .from('digital_cards')
+    .insert({
+      template_key: data.templateKey,
+      message: data.message,
+      recipient_name: data.recipientName ?? null,
+    })
+    .select()
+    .single();
+
+  if (error) throw error;
+  return created;
 }

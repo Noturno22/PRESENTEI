@@ -1,35 +1,44 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Contact } from '@presentei/shared/types';
 
-/**
- * Returns contacts whose birthdays fall within the next `daysAhead` days.
- *
- * @todo Implement actual Supabase query when Supabase is active.
- */
 export async function getUpcomingBirthdays(
   supabase: SupabaseClient,
   daysAhead: number,
 ): Promise<Contact[]> {
-  // @todo: implement
-  // const today = new Date();
-  // const future = new Date(today.getTime() + daysAhead * 24 * 60 * 60 * 1000);
-  // Use PostgreSQL date extraction to compare month and day
-  return [];
+  const { data, error } = await supabase
+    .from('contacts')
+    .select('*');
+
+  if (error) throw error;
+  if (!data) return [];
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const future = new Date(today.getTime() + daysAhead * 86400000);
+
+  return data.filter((contact) => {
+    const birthDate = new Date(contact.birth_date);
+    const nextBirthday = new Date(today.getFullYear(), birthDate.getMonth(), birthDate.getDate());
+    if (nextBirthday < today) {
+      nextBirthday.setFullYear(today.getFullYear() + 1);
+    }
+    return nextBirthday >= today && nextBirthday <= future;
+  });
 }
 
-/**
- * Returns contacts who celebrate their birthday in a given month (1-12).
- *
- * @todo Implement actual Supabase query when Supabase is active.
- */
 export async function getContactsByMonth(
   supabase: SupabaseClient,
   month: number,
 ): Promise<Contact[]> {
-  // @todo: implement
-  // return supabase.from('contacts')
-  //   .select('*')
-  //   .where('EXTRACT(MONTH FROM birth_date) = ?', month)
-  //   .throwOnError();
-  return [];
+  const { data, error } = await supabase
+    .from('contacts')
+    .select('*');
+
+  if (error) throw error;
+  if (!data) return [];
+
+  return data.filter((contact) => {
+    const d = new Date(contact.birth_date);
+    return d.getMonth() === month;
+  });
 }

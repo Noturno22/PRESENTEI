@@ -2,68 +2,72 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Contact } from '@presentei/shared/types';
 import type { ContactInput } from '@presentei/shared/schemas';
 
-/**
- * Returns all contacts belonging to the current user.
- *
- * @todo Implement actual Supabase query when Supabase is active.
- */
 export async function getContacts(supabase: SupabaseClient): Promise<Contact[]> {
-  // @todo: implement
-  // return supabase.from('contacts').select('*').throwOnError();
-  return [];
+  const { data, error } = await supabase
+    .from('contacts')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) throw error;
+  return data ?? [];
 }
 
-/**
- * Returns a single contact by its ID.
- *
- * @todo Implement actual Supabase query when Supabase is active.
- */
 export async function getContactById(supabase: SupabaseClient, id: string): Promise<Contact | null> {
-  // @todo: implement
-  // const { data } = await supabase.from('contacts').select('*').eq('id', id).single().throwOnError();
-  // return data;
-  return null;
+  const { data, error } = await supabase
+    .from('contacts')
+    .select('*')
+    .eq('id', id)
+    .single();
+
+  if (error) throw error;
+  return data;
 }
 
-/**
- * Creates a new contact.
- *
- * @todo Implement actual Supabase mutation when Supabase is active.
- */
 export async function createContact(supabase: SupabaseClient, data: ContactInput): Promise<Contact> {
-  // @todo: implement
-  // const { data: created } = await supabase.from('contacts').insert(data).select().single().throwOnError();
-  // return created;
-  throw new Error('[api-client] createContact is not yet implemented. Configure Supabase first.');
+  const { data: created, error } = await supabase
+    .from('contacts')
+    .insert({
+      full_name: data.fullName,
+      relation: data.relation,
+      birth_date: data.birthDate,
+      photo_url: data.photoUrl ?? null,
+      notes: data.notes ?? null,
+    })
+    .select()
+    .single();
+
+  if (error) throw error;
+  return created;
 }
 
-/**
- * Updates an existing contact.
- *
- * @todo Implement actual Supabase mutation when Supabase is active.
- */
 export async function updateContact(
   supabase: SupabaseClient,
   id: string,
   data: Partial<ContactInput>,
 ): Promise<Contact> {
-  // @todo: implement
-  // const { data: updated } = await supabase.from('contacts').update(data).eq('id', id).select().single().throwOnError();
-  // return updated;
-  throw new Error('[api-client] updateContact is not yet implemented. Configure Supabase first.');
+  const payload: Record<string, unknown> = {};
+  if (data.fullName !== undefined) payload.full_name = data.fullName;
+  if (data.relation !== undefined) payload.relation = data.relation;
+  if (data.birthDate !== undefined) payload.birth_date = data.birthDate;
+  if (data.photoUrl !== undefined) payload.photo_url = data.photoUrl ?? null;
+  if (data.notes !== undefined) payload.notes = data.notes ?? null;
+
+  const { data: updated, error } = await supabase
+    .from('contacts')
+    .update(payload)
+    .eq('id', id)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return updated;
 }
 
-/**
- * Deletes a contact.
- *
- * If the contacts table has a `deleted_at` column, performs a soft delete.
- * Otherwise performs a hard delete.
- *
- * @todo Implement actual Supabase mutation when Supabase is active.
- */
 export async function deleteContact(supabase: SupabaseClient, id: string): Promise<void> {
-  // @todo: implement
-  // await supabase.from('contacts').update({ deleted_at: new Date().toISOString() }).eq('id', id).throwOnError();
-  // or: await supabase.from('contacts').delete().eq('id', id).throwOnError();
-  throw new Error('[api-client] deleteContact is not yet implemented. Configure Supabase first.');
+  const { error } = await supabase
+    .from('contacts')
+    .delete()
+    .eq('id', id);
+
+  if (error) throw error;
 }

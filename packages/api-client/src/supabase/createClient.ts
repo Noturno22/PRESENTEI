@@ -1,15 +1,23 @@
 import { createServerClient as _createServerClient, createBrowserClient as _createBrowserClient } from '@supabase/ssr';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
+interface Cookie {
+  name: string;
+  value: string;
+  options?: Record<string, unknown>;
+}
+
+interface CookieStore {
+  getAll(): Cookie[];
+  set(name: string, value: string, options?: Record<string, unknown>): void;
+}
+
 /**
  * Creates a Supabase client for server-side usage (Next.js App Router).
- *
- * Requires NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY
- * environment variables to be set.
- *
- * @returns A promise that resolves to a SupabaseClient instance.
  */
-export async function createServerClient(): Promise<SupabaseClient> {
+export async function createServerClient(
+  cookieStore?: CookieStore,
+): Promise<SupabaseClient> {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
@@ -27,14 +35,15 @@ export async function createServerClient(): Promise<SupabaseClient> {
     );
   }
 
-  // @todo: configure cookie handling for Next.js App Router when Supabase is active
   return _createServerClient(supabaseUrl, supabaseAnonKey, {
     cookies: {
       getAll() {
-        return [];
+        return cookieStore?.getAll() ?? [];
       },
-      setAll() {
-        // no-op until Supabase is active
+      setAll(cookiesToSet: { name: string; value: string; options?: Record<string, unknown> }[]) {
+        cookiesToSet.forEach(({ name, value, options }) => {
+          cookieStore?.set(name, value, options);
+        });
       },
     },
   });
@@ -42,11 +51,6 @@ export async function createServerClient(): Promise<SupabaseClient> {
 
 /**
  * Creates a Supabase client for browser-side usage (Next.js client components).
- *
- * Requires NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY
- * environment variables to be set.
- *
- * @returns A promise that resolves to a SupabaseClient instance.
  */
 export async function createBrowserClient(): Promise<SupabaseClient> {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -66,15 +70,5 @@ export async function createBrowserClient(): Promise<SupabaseClient> {
     );
   }
 
-  // @todo: configure cookie handling for browser when Supabase is active
-  return _createBrowserClient(supabaseUrl, supabaseAnonKey, {
-    cookies: {
-      getAll() {
-        return [];
-      },
-      setAll() {
-        // no-op until Supabase is active
-      },
-    },
-  });
+  return _createBrowserClient(supabaseUrl, supabaseAnonKey);
 }
