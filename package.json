@@ -1,0 +1,19 @@
+{
+  "name": "presentei",
+  "private": true,
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "typecheck": "turbo typecheck",
+    "gen:types": "supabase gen types typescript --local > packages/shared/src/types/database.ts"
+  },
+  "devDependencies": {
+    "turbo": "^2.4.0",
+    "typescript": "^5.4.0"
+  },
+  "packageManager": "pnpm@10.34.4",
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

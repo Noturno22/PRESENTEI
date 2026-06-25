@@ -1,0 +1,19 @@
+[project]
+name = "presentei"
+# This is a placeholder — will be overridden when connecting to actual Supabase project
+# Use `supabase link --project-ref <ref>` to connect
+ref = ""
+
+[auth]
+enabled = true
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "auth", "storage"]
+
+[db]
+major_version = 15
+
+[analytics]
+enabled = false
