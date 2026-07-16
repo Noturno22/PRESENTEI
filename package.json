@@ -10,10 +10,13 @@
   },
   "devDependencies": {
     "turbo": "^2.4.0",
-    "typescript": "^5.4.0"
+    "typescript": "~6.0.3"
   },
   "packageManager": "pnpm@10.34.4",
   "engines": {
     "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "expo": "~57.0.6"
   }
 }

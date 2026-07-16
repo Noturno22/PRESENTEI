@@ -19,14 +19,20 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#2D1140"
       },
       "package": "com.presentei.app"
     },
     "web": {
       "bundler": "metro",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/icon.png"
+    },
+    "owner": "samainas-organization",
+    "extra": {
+      "eas": {
+        "projectId": "6f2ec678-48bf-4a68-ab13-3dff82c6619c"
+      }
     },
     "plugins": [
       "expo-router"
