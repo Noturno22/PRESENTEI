@@ -7,12 +7,6 @@
     "icon": "./assets/images/icon.png",
     "scheme": "presentei",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
-    "splash": {
-      "image": "./assets/images/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#2D1140"
-    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.presentei.app"
@@ -35,7 +29,15 @@
       }
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/splash-icon.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#2D1140"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

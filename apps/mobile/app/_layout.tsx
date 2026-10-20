@@ -1,23 +1,23 @@
-import { useEffect, useState, useRef } from 'react';
-import { Stack } from 'expo-router';
-import { View, Text, ActivityIndicator } from 'react-native';
+import { useEffect, useState } from 'react';
+import { Stack, router } from 'expo-router';
+import { View, ActivityIndicator } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { SupabaseProvider, createMobileClient } from '@presentei/api-client';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import './global.css';
+import '../global.css';
 
 const supabaseConfigured = !!(
   process.env.EXPO_PUBLIC_SUPABASE_URL && process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY
 );
 
 export default function RootLayout() {
-  const [initialRoute, setInitialRoute] = useState<'loading' | 'auth' | 'tabs'>('loading');
+  const [ready, setReady] = useState(false);
   const [supabaseClient, setSupabaseClient] = useState<SupabaseClient | null>(null);
 
   useEffect(() => {
     async function init() {
       if (!supabaseConfigured) {
-        setInitialRoute('tabs');
+        setReady(true);
         return;
       }
 
@@ -38,18 +38,22 @@ export default function RootLayout() {
         setSupabaseClient(client);
 
         const { data: { session } } = await client.auth.getSession();
-        setInitialRoute(session ? 'tabs' : 'auth');
+        if (!session) {
+          router.replace('/(auth)/login');
+        }
       } catch {
-        setInitialRoute('tabs');
+        // On error, go to tabs
       }
+
+      setReady(true);
     }
 
     init();
   }, []);
 
-  if (initialRoute === 'loading') {
+  if (!ready) {
     return (
-      <View className="flex-1 items-center justify-center bg-brand-off-white">
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F9F7FB' }}>
         <ActivityIndicator size="large" color="#FF4D8D" />
       </View>
     );
@@ -59,11 +63,11 @@ export default function RootLayout() {
     <SafeAreaProvider>
       <SupabaseProvider client={supabaseClient ?? undefined}>
         <Stack screenOptions={{ headerShown: false }}>
-          {initialRoute === 'auth' ? (
-            <Stack.Screen name="(auth)" />
-          ) : (
-            <Stack.Screen name="(tabs)" />
-          )}
+          <Stack.Screen name="(auth)" />
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="checkout" />
+          <Stack.Screen name="criar-cartao" />
+          <Stack.Screen name="presentes" />
         </Stack>
       </SupabaseProvider>
     </SafeAreaProvider>
